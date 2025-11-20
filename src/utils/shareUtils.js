@@ -1,11 +1,8 @@
 // SNS 공유 유틸리티 함수들
 
-// 카카오 SDK 초기화 (실제 앱 키로 교체 필요)
-const initKakao = () => {
-  if (window.Kakao && !window.Kakao.isInitialized()) {
-    // 실제 서비스에서는 본인의 카카오 앱 키를 사용해야 합니다
-    window.Kakao.init('YOUR_KAKAO_APP_KEY'); // 실제 키로 교체 필요
-  }
+// 카카오 SDK 초기화 체크 함수
+const isKakaoAvailable = () => {
+  return window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized();
 };
 
 export const shareToFacebook = (mbtiType, title) => {
@@ -32,45 +29,59 @@ ${title}
 
 export const shareToKakao = (mbtiType, title) => {
   const url = window.location.origin;
-  const text = `내 MBTI는 ${mbtiType}! ${title}`;
+  const text = `🎯 내 MBTI는 ${mbtiType}! 
+${title}
+
+나와 같은 성격인지 테스트해보세요!`;
+
+  // 사용자 에이전트 확인
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   
-  // 카카오 SDK 초기화
-  initKakao();
-  
-  // 카카오톡 공유 (웹 버전)
-  if (window.Kakao && window.Kakao.Share) {
-    try {
-      window.Kakao.Share.sendDefault({
-        objectType: 'feed',
-        content: {
-          title: `MBTI 테스트 결과: ${mbtiType}`,
-          description: text,
-          imageUrl: `${url}/favicon.ico`, // 기본 파비콘 사용
-          link: {
-            mobileWebUrl: url,
-            webUrl: url,
-          },
-        },
-        buttons: [
-          {
-            title: '나도 테스트하기',
-            link: {
-              mobileWebUrl: url,
-              webUrl: url,
-            },
-          },
-        ],
-      });
-    } catch (error) {
-      console.error('카카오톡 공유 실패:', error);
-      // 카카오톡 공유 실패시 카카오스토리로 대체
+  if (isMobile) {
+    // 모바일에서는 선택지 제공
+    const message = `카카오톡으로 공유하는 방법을 선택해주세요:
+
+✅ 확인: 텍스트를 복사해서 카카오톡에 붙여넣기
+❌ 취소: 카카오스토리로 공유하기`;
+
+    if (confirm(message)) {
+      copyToClipboardForKakao(text, url);
+    } else {
+      // 카카오스토리로 공유
       const shareUrl = `https://story.kakao.com/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
       window.open(shareUrl, '_blank', 'width=600,height=400');
     }
   } else {
-    // 카카오톡이 없는 경우 카카오스토리로 대체
-    const shareUrl = `https://story.kakao.com/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-    window.open(shareUrl, '_blank', 'width=600,height=400');
+    // 데스크톱에서는 선택지 제공
+    const message = `💬 카카오톡 공유 방법을 선택해주세요:
+
+✅ 확인: 텍스트를 복사해서 카카오톡에 붙여넣기
+❌ 취소: 카카오스토리로 공유하기`;
+
+    if (confirm(message)) {
+      copyToClipboardForKakao(text, url);
+    } else {
+      // 카카오스토리로 공유
+      const shareUrl = `https://story.kakao.com/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+      window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+  }
+};
+
+// 카카오톡용 클립보드 복사 함수
+const copyToClipboardForKakao = (text, url) => {
+  const fullText = `${text}\n\n${url}\n\n#MBTI #성격테스트 #심리테스트`;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(fullText).then(() => {
+      alert('💬 카카오톡 공유용 텍스트가 클립보드에 복사되었습니다!\n\n카카오톡에서 대화방을 열고 붙여넣기(Ctrl+V) 해주세요 ✨');
+    }).catch(() => {
+      fallbackCopyToClipboard(fullText);
+    });
+  } else {
+    fallbackCopyToClipboard(fullText);
   }
 };
 

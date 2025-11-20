@@ -225,9 +225,10 @@ const Result = () => {
                   e.target.style.backgroundColor = '#fee500';
                   e.target.style.transform = 'translateY(0)';
                 }}
+                title="카카오톡 앱으로 공유하거나 텍스트를 복사합니다"
               >
                 <span style={{ fontSize: '1rem' }}>💬</span>
-                KakaoTalk으로 공유하기
+                카카오톡으로 공유하기
               </button>
 
               {/* Line */}
