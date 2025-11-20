@@ -1,108 +1,141 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useMbti } from '../context/MbtiContext';
-import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { useRecoilState } from 'recoil';
+import { quizProgressState } from '../recoil/quizState';
 
-const HomeContainer = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-`;
-
-const Title = styled.h1`
-  font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-
-  @media (max-width: 768px) {
-    font-size: 2rem;
-  }
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.25rem;
-  margin-bottom: 3rem;
-  text-align: center;
-  opacity: 0.95;
-  line-height: 1.6;
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-  }
-`;
-
-const StartButton = styled.button`
-  padding: 1rem 3rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  background: white;
-  color: #667eea;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
-  }
-`;
-
-const Icon = styled.div`
-  font-size: 5rem;
-  margin-bottom: 1rem;
-  animation: float 3s ease-in-out infinite;
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-20px);
-    }
-  }
-`;
-
-function Home() {
-  const navigate = useNavigate();
-  const { startTest } = useMbti();
+const Home = () => {
+  const [, setQuizProgress] = useRecoilState(quizProgressState);
 
   const handleStart = () => {
-    startTest();
-    navigate('/quiz');
+    setQuizProgress('quiz');
   };
 
   return (
-    <HomeContainer>
-      <Icon>🧩</Icon>
-      <Title>MBTI 진단 테스트</Title>
-      <Subtitle>
-        간단한 질문을 통해 당신의 성격 유형을 알아보세요!
-      </Subtitle>
-      <StartButton onClick={handleStart}>
-        MBTI 테스트 시작
-      </StartButton>
-    </HomeContainer>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      width: '100%',
+      boxSizing: 'border-box'
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '400px',
+        textAlign: 'center'
+      }}>
+        {/* 메인 아이콘 */}
+        <motion.div
+          style={{ marginBottom: '2rem' }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <motion.div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '96px',
+              height: '96px',
+              marginBottom: '2rem'
+            }}
+            animate={{ 
+              rotate: [0, 10, -10, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              duration: 3, 
+              repeat: Infinity, 
+              repeatDelay: 2 
+            }}
+          >
+            {/* 퍼즐 아이콘 */}
+            <div style={{ position: 'relative', width: '64px', height: '64px' }}>
+              <div style={{
+                position: 'absolute',
+                width: '48px',
+                height: '48px',
+                backgroundColor: '#10b981',
+                borderRadius: '8px',
+                border: '2px solid #000',
+                transform: 'rotate(12deg)'
+              }}></div>
+              <div style={{
+                position: 'absolute',
+                width: '48px',
+                height: '48px',
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                border: '2px solid #000'
+              }}></div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* 제목 */}
+        <motion.div
+          style={{ marginBottom: '3rem' }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: '1rem',
+            lineHeight: '1.2'
+          }}>
+            MBTI 진단 테스트
+          </h1>
+          <p style={{
+            fontSize: '1.25rem',
+            color: 'rgba(255, 255, 255, 0.9)',
+            lineHeight: '1.6',
+            margin: '0'
+          }}>
+            간단한 질문을 통해 당신의 성격 유형을 알아보세요!
+          </p>
+        </motion.div>
+
+        {/* 시작 버튼 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          <button
+            onClick={handleStart}
+            style={{
+              width: '100%',
+              padding: '1rem 2rem',
+              fontSize: '1.25rem',
+              fontWeight: 'bold',
+              color: 'white',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '9999px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+            }}
+          >
+            MBTI 테스트 시작
+          </button>
+        </motion.div>
+      </div>
+    </div>
   );
-}
+};
 
 export default Home;
-

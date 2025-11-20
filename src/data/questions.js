@@ -1,76 +1,67 @@
-// MBTI 질문 데이터
+// MBTI Studio - 카드형 질문 데이터
 export const questions = [
   {
     id: 1,
-    question: "새로운 사람들과의 만남에서 나는?",
-    optionA: { text: "먼저 말을 걸고 활발하게 대화를 나눈다", type: "E" },
-    optionB: { text: "상대방이 먼저 말을 걸 때까지 기다린다", type: "I" }
+    question: "하루 일정을 세울 땐, 나는?",
+    cards: [
+      { id: 'A', text: "계획표를 세세하게 짜야 마음이 편해 😌", type: 'J' },
+      { id: 'B', text: "그때그때 기분에 따라 움직이지 🎢", type: 'P' }
+    ]
   },
   {
     id: 2,
-    question: "주말에 계획을 세울 때 나는?",
-    optionA: { text: "친구들과 함께 활동적인 일정을 짠다", type: "E" },
-    optionB: { text: "집에서 혼자만의 시간을 즐긴다", type: "I" }
+    question: "새로운 사람들과 만날 때 나는?",
+    cards: [
+      { id: 'A', text: "먼저 다가가서 대화를 시작해 🗣️", type: 'E' },
+      { id: 'B', text: "상대방이 말을 걸 때까지 기다려 🤐", type: 'I' }
+    ]
   },
   {
     id: 3,
     question: "문제를 해결할 때 나는?",
-    optionA: { text: "다양한 가능성을 먼저 탐색한다", type: "N" },
-    optionB: { text: "검증된 방법과 사실을 우선시한다", type: "S" }
+    cards: [
+      { id: 'A', text: "논리적으로 분석해서 답을 찾아 🧠", type: 'T' },
+      { id: 'B', text: "직감과 감정을 믿고 결정해 💝", type: 'F' }
+    ]
   },
   {
     id: 4,
-    question: "새로운 프로젝트를 시작할 때?",
-    optionA: { text: "전체적인 그림과 비전을 먼저 본다", type: "N" },
-    optionB: { text: "구체적인 단계와 세부사항부터 정한다", type: "S" }
+    question: "정보를 받아들일 때 나는?",
+    cards: [
+      { id: 'A', text: "구체적인 사실과 경험을 중시해 📊", type: 'S' },
+      { id: 'B', text: "가능성과 의미를 상상해봐 🌟", type: 'N' }
+    ]
   },
   {
     id: 5,
-    question: "중요한 결정을 내릴 때?",
-    optionA: { text: "감정과 가치관을 우선 고려한다", type: "F" },
-    optionB: { text: "논리와 객관적 기준을 우선 고려한다", type: "T" }
+    question: "주말에 에너지를 충전하는 방법은?",
+    cards: [
+      { id: 'A', text: "친구들과 만나서 수다떨기 👥", type: 'E' },
+      { id: 'B', text: "혼자만의 시간을 즐기기 🏠", type: 'I' }
+    ]
   },
   {
     id: 6,
-    question: "갈등 상황에서 나는?",
-    optionA: { text: "모든 사람의 감정을 배려하며 해결하려 한다", type: "F" },
-    optionB: { text: "공정하고 논리적인 해결책을 찾는다", type: "T" }
+    question: "중요한 결정을 내릴 때?",
+    cards: [
+      { id: 'A', text: "객관적 기준으로 판단해 ⚖️", type: 'T' },
+      { id: 'B', text: "사람들의 감정을 고려해 💕", type: 'F' }
+    ]
   },
   {
     id: 7,
-    question: "일상 생활에서 나는?",
-    optionA: { text: "계획대로 진행하는 것을 선호한다", type: "J" },
-    optionB: { text: "유연하게 상황에 맞춰 행동한다", type: "P" }
+    question: "새로운 프로젝트를 시작할 때?",
+    cards: [
+      { id: 'A', text: "단계별 계획을 세우고 시작해 📋", type: 'J' },
+      { id: 'B', text: "일단 시작하고 상황에 맞춰 조정해 🚀", type: 'P' }
+    ]
   },
   {
     id: 8,
-    question: "여행을 떠날 때 나는?",
-    optionA: { text: "상세한 일정표를 만든다", type: "J" },
-    optionB: { text: "즉흥적으로 즐긴다", type: "P" }
-  },
-  {
-    id: 9,
-    question: "에너지를 얻는 방법은?",
-    optionA: { text: "사람들과 어울리며 활기찬 활동", type: "E" },
-    optionB: { text: "혼자만의 시간과 조용한 활동", type: "I" }
-  },
-  {
-    id: 10,
-    question: "정보를 받아들일 때?",
-    optionA: { text: "직관과 패턴을 통해 이해한다", type: "N" },
-    optionB: { text: "실제 경험과 구체적 사실로 이해한다", type: "S" }
-  },
-  {
-    id: 11,
-    question: "타인을 평가할 때?",
-    optionA: { text: "공감과 이해를 바탕으로 본다", type: "F" },
-    optionB: { text: "객관적 기준과 논리로 본다", type: "T" }
-  },
-  {
-    id: 12,
-    question: "일의 진행 방식은?",
-    optionA: { text: "마감일 전에 미리 완료하는 편이다", type: "J" },
-    optionB: { text: "마감일 직전에 집중해서 완료한다", type: "P" }
+    question: "학습할 때 선호하는 방식은?",
+    cards: [
+      { id: 'A', text: "실제 경험과 구체적 예시로 📚", type: 'S' },
+      { id: 'B', text: "이론과 개념의 연결고리로 🔗", type: 'N' }
+    ]
   }
 ];
-

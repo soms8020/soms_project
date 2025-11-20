@@ -1,25 +1,41 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { MbtiProvider } from './context/MbtiContext';
+import { RecoilRoot, useRecoilValue } from 'recoil';
+import { AnimatePresence } from 'framer-motion';
+import { quizProgressState } from './recoil/quizState';
 import Home from './pages/Home';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
-import GlobalStyle from './styles/GlobalStyle';
+
+const AppContent = () => {
+  const quizProgress = useRecoilValue(quizProgressState);
+
+  const renderCurrentPage = () => {
+    switch (quizProgress) {
+      case 'home':
+        return <Home key="home" />;
+      case 'quiz':
+        return <Quiz key="quiz" />;
+      case 'result':
+        return <Result key="result" />;
+      default:
+        return <Home key="home" />;
+    }
+  };
+
+  return (
+    <div className="App">
+      <AnimatePresence mode="wait">
+        {renderCurrentPage()}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 function App() {
   return (
-    <MbtiProvider>
-      <GlobalStyle />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/result" element={<Result />} />
-        </Routes>
-      </Router>
-    </MbtiProvider>
+    <RecoilRoot>
+      <AppContent />
+    </RecoilRoot>
   );
 }
 
 export default App;
-

@@ -1,190 +1,109 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useMbti } from '../context/MbtiContext';
-import styled from 'styled-components';
+import { useRecoilState } from 'recoil';
+import { AnimatePresence } from 'framer-motion';
+import { currentQuestionState, answersState, quizProgressState } from '../recoil/quizState';
+import { questions } from '../data/questions';
+import QuestionCard from '../components/QuestionCard';
+import ProgressBar from '../components/ProgressBar';
 
-const QuizContainer = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-`;
+const Quiz = () => {
+  const [currentQuestion, setCurrentQuestion] = useRecoilState(currentQuestionState);
+  const [answers, setAnswers] = useRecoilState(answersState);
+  const [, setQuizProgress] = useRecoilState(quizProgressState);
 
-const ProgressBar = styled.div`
-  width: 100%;
-  max-width: 600px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  margin-bottom: 2rem;
-  overflow: hidden;
-`;
+  const handleCardSelect = (selectedCard) => {
+    // 답변 저장
+    const newAnswers = [...answers];
+    newAnswers[currentQuestion] = selectedCard;
+    setAnswers(newAnswers);
 
-const ProgressFill = styled.div`
-  height: 100%;
-  background: white;
-  border-radius: 10px;
-  transition: width 0.3s ease;
-  width: ${props => props.progress}%;
-`;
-
-const QuestionNumber = styled.div`
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  opacity: 0.9;
-`;
-
-const QuestionText = styled.h2`
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin-bottom: 3rem;
-  text-align: center;
-  line-height: 1.5;
-
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-  }
-`;
-
-const OptionsContainer = styled.div`
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const OptionButton = styled.button`
-  padding: 1.5rem;
-  font-size: 1.125rem;
-  background: ${props => props.selected ? 'white' : 'rgba(255, 255, 255, 0.2)'};
-  color: ${props => props.selected ? '#667eea' : 'white'};
-  border: 2px solid ${props => props.selected ? 'white' : 'rgba(255, 255, 255, 0.5)'};
-  border-radius: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: left;
-  backdrop-filter: blur(10px);
-
-  &:hover {
-    background: ${props => props.selected ? 'white' : 'rgba(255, 255, 255, 0.3)'};
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    padding: 1.25rem;
-    font-size: 1rem;
-  }
-`;
-
-const NextButton = styled.button`
-  margin-top: 2rem;
-  padding: 1rem 3rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  background: white;
-  color: #667eea;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  opacity: ${props => props.disabled ? 0.5 : 1};
-  pointer-events: ${props => props.disabled ? 'none' : 'auto'};
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-`;
-
-function Quiz() {
-  const navigate = useNavigate();
-  const {
-    questions,
-    currentQuestionIndex,
-    answers,
-    submitAnswer,
-    nextQuestion,
-    calculateResult,
-    isTestStarted
-  } = useMbti();
-
-  useEffect(() => {
-    if (!isTestStarted) {
-      navigate('/');
-    }
-  }, [isTestStarted, navigate]);
-
-  const currentQuestion = questions[currentQuestionIndex];
-  const currentAnswer = answers[currentQuestion.id];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
-
-  const handleOptionClick = (answerType) => {
-    submitAnswer(currentQuestion.id, answerType);
-  };
-
-  const handleNext = () => {
-    if (currentAnswer) {
-      if (isLastQuestion) {
-        calculateResult();
-        navigate('/result');
-      } else {
-        nextQuestion();
-      }
+    // 다음 질문으로 이동 또는 결과 페이지로
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      setQuizProgress('result');
     }
   };
 
-  if (!currentQuestion) {
-    return null;
-  }
+  const currentQuestionData = questions[currentQuestion];
 
   return (
-    <QuizContainer>
-      <ProgressBar>
-        <ProgressFill progress={progress} />
-      </ProgressBar>
-      <QuestionNumber>
-        질문 {currentQuestionIndex + 1} / {questions.length}
-      </QuestionNumber>
-      <QuestionText>{currentQuestion.question}</QuestionText>
-      <OptionsContainer>
-        <OptionButton
-          selected={currentAnswer === currentQuestion.optionA.type}
-          onClick={() => handleOptionClick(currentQuestion.optionA.type)}
-        >
-          {currentQuestion.optionA.text}
-        </OptionButton>
-        <OptionButton
-          selected={currentAnswer === currentQuestion.optionB.type}
-          onClick={() => handleOptionClick(currentQuestion.optionB.type)}
-        >
-          {currentQuestion.optionB.text}
-        </OptionButton>
-      </OptionsContainer>
-      <NextButton
-        onClick={handleNext}
-        disabled={!currentAnswer}
-      >
-        {isLastQuestion ? '결과 보기' : '다음'}
-      </NextButton>
-    </QuizContainer>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      width: '100%',
+      boxSizing: 'border-box'
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '400px'
+      }}>
+        <ProgressBar current={currentQuestion + 1} total={questions.length} />
+        
+        <AnimatePresence mode="wait">
+          <div key={currentQuestion}>
+            {/* 질문 */}
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <h2 style={{
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                color: 'white',
+                marginBottom: '2rem',
+                lineHeight: '1.5',
+                wordBreak: 'keep-all'
+              }}>
+                {currentQuestionData.question}
+              </h2>
+            </div>
+
+            {/* 카드 선택지들 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {currentQuestionData.cards.map((card, index) => (
+                <div
+                  key={card.id}
+                  onClick={() => handleCardSelect(card)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '1rem',
+                    padding: '1.5rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    color: 'white'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                    e.target.style.transform = 'scale(1.02)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  <p style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '500',
+                    textAlign: 'center',
+                    lineHeight: '1.6',
+                    margin: '0',
+                    wordBreak: 'keep-all'
+                  }}>
+                    {card.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </AnimatePresence>
+      </div>
+    </div>
   );
-}
+};
 
 export default Quiz;
-
